@@ -106,6 +106,8 @@ type DataSource interface {
 	GetMempoolSSTxDetails(N int) *apitypes.MempoolTicketDetails
 	GetAddressTransactionsRawWithSkip(addr string, count, skip int) []*apitypes.AddressTxRaw
 	GetMempoolPriceCountTime() *apitypes.PriceCountTime
+	TreasuryBalance() (*dbtypes.TreasuryBalance, error)
+	TreasuryTxns(n, offset int64, txType stake.TxType) ([]*dbtypes.TreasuryTx, error)
 }
 
 // dcrdata application context used by all route handlers
