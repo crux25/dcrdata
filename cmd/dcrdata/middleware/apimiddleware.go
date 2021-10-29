@@ -377,6 +377,17 @@ func PostTrsCtx(next http.Handler) http.Handler {
 	})
 }
 
+// GetCtxTrsTxns retrieves the ctxTreasuryTxns data from the request context.
+func GetCtxTrsTxns(r *http.Request) (apitypes.TreasuryTxParams, error) {
+	trsTxns, ok := r.Context().Value(ctxTreasuryTxns).(apitypes.TreasuryTxParams)
+	if !ok {
+		apiLog.Trace("ctxTreasuryTxns not set")
+		return apitypes.TreasuryTxParams{}, fmt.Errorf("ctxTreasuryTxns not set")
+	}
+
+	return trsTxns, nil
+}
+
 // ValidateTxnsPostCtx will confirm Post content length is valid.
 func ValidateTxnsPostCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
