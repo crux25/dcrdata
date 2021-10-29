@@ -22,6 +22,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/decred/dcrd/blockchain/stake/v4"
 	"github.com/decred/dcrd/chaincfg/chainhash"
 	"github.com/decred/dcrd/chaincfg/v3"
 	"github.com/decred/dcrd/dcrutil/v4"
@@ -2051,4 +2052,40 @@ func (c *appContext) getBlockHashCtx(r *http.Request) (string, error) {
 		}
 	}
 	return hash, nil
+}
+
+func (c *appContext) getTreasuryTx(w http.ResponseWriter, r *http.Request) {
+	trsTxParams, err := m.GetCtxTrsTxns(r)
+	if err != nil {
+		apiLog.Errorf("Unable to GetTreasuryTx: %v", err)
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	txns, err := c.DataSource.TreasuryTxns(trsTxParams.Limit, trsTxParams.Offset, trsTxParams.TxType)
+	if err != nil {
+		apiLog.Errorf("Unable to GetTreasuryTx: %v", err)
+		return
+	}
+
+	trsTxns := apitypes.TreasuryTxns{
+		Txns: txns,
+	}
+
+	writeJSON(w, trsTxns, m.GetIndentCtx(r))
+}
+
+func (c *appContext) getTreasuryBal(w http.ResponseWriter, r *http.Request) {
+	trsBal, err := c.DataSource.TreasuryBalance()
+	if err != nil {
+		apiLog.Errorf("Unable to GetTreasuryBal: %v", err)
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	bal := apitypes.TreasuryBal{
+		Balance: trsBal,
+	}
+
+	writeJSON(w, bal, m.GetIndentCtx(r))
 }
