@@ -61,6 +61,7 @@ const (
 	ctxXcToken
 	ctxStickWidth
 	ctxIndent
+	ctxTreasuryTxns
 )
 
 type DataSource interface {
@@ -346,6 +347,31 @@ func PostTxnsCtx(next http.Handler) http.Handler {
 		}
 		// Successful extraction of body JSON
 		ctx := context.WithValue(r.Context(), ctxTxns, req.Transactions)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+// PostTrsCtx extracts treasury params from the post body.
+func PostTrsCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		params := apitypes.TreasuryTxParams{}
+		body, err := ioutil.ReadAll(r.Body)
+		r.Body.Close()
+		if err != nil {
+			apiLog.Debugf("No/invalid treasury params: %v", err)
+			http.Error(w, "error reading JSON message", http.StatusBadRequest)
+			return
+		}
+
+		err = json.Unmarshal(body, &params)
+		if err != nil {
+			apiLog.Debugf("failed to unmarshal JSON request to apitypes.TreasuryTxParams: %v", err)
+			http.Error(w, "failed to unmarshal JSON request", http.StatusBadRequest)
+			return
+		}
+		// Successful extraction of body JSON
+		ctx := context.WithValue(r.Context(), ctxTreasuryTxns, params)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

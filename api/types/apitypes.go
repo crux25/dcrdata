@@ -790,3 +790,15 @@ type PriceCountTime struct {
 	Count int             `json:"count"`
 	Time  dbtypes.TimeDef `json:"time"`
 }
+
+// TreasuryTx models treasury transactions
+type TreasuryTxns struct {
+	Txns []*dbtypes.TreasuryTx `json:"txns"`
+}
+
+// TreasuryTxParams models the treasury transactions post data structure.
+type TreasuryTxParams struct {
+	Limit  int64        `json:"limit"`
+	Offset int64        `json:"offset"`
+	TxType stake.TxType `json:"txtype"`
+}
