@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/decred/dcrd/blockchain/stake/v4"
 	chainjson "github.com/decred/dcrd/rpc/jsonrpc/types/v3"
 	"github.com/decred/dcrdata/v7/db/dbtypes"
 	"github.com/decred/dcrdata/v7/txhelpers"
@@ -801,4 +802,9 @@ type TreasuryTxParams struct {
 	Limit  int64        `json:"limit"`
 	Offset int64        `json:"offset"`
 	TxType stake.TxType `json:"txtype"`
+}
+
+// TreasuryBal models treasury balance.
+type TreasuryBal struct {
+	Balance *dbtypes.TreasuryBalance `json:"balance"`
 }
